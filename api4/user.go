@@ -159,6 +159,8 @@ func createUser(c *Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	auditRec.AddMetadata(user, nil, ruser, "user")
+
 	auditRec.Success()
 	auditRec.AddMeta("user", ruser) // overwrite meta
 
@@ -461,6 +463,7 @@ func setProfileImage(c *Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := c.App.GetUser(c.Params.UserId)
+	userBefore := user.DeepCopy()
 	if err != nil {
 		c.SetInvalidURLParam("user_id")
 		return
@@ -480,6 +483,8 @@ func setProfileImage(c *Context, w http.ResponseWriter, r *http.Request) {
 		c.Err = err
 		return
 	}
+
+	auditRec.AddMetadata(fmt.Sprintf("[image data %d bytes]", len(imageArray)), userBefore, user, "user")
 
 	auditRec.Success()
 	c.LogAudit("")
@@ -507,6 +512,7 @@ func setDefaultProfileImage(c *Context, w http.ResponseWriter, r *http.Request) 
 	defer c.LogAuditRec(auditRec)
 
 	user, err := c.App.GetUser(c.Params.UserId)
+	userBefore := user.DeepCopy()
 	if err != nil {
 		c.Err = err
 		return
@@ -518,6 +524,7 @@ func setDefaultProfileImage(c *Context, w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	auditRec.AddMetadata(nil, userBefore, user, "user")
 	auditRec.Success()
 	c.LogAudit("")
 
@@ -1255,7 +1262,7 @@ func patchUser(c *Context, w http.ResponseWriter, r *http.Request) {
 		c.SetInvalidParam("user_id")
 		return
 	}
-	auditRec.AddMeta("user", ouser)
+	auditRec.UserID = ouser.Id
 
 	// Cannot update a system admin unless user making request is a systemadmin also
 	if ouser.IsSystemAdmin() && !c.App.SessionHasPermissionTo(*c.AppContext.Session(), model.PermissionManageSystem) {
@@ -1299,6 +1306,8 @@ func patchUser(c *Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.App.SetAutoResponderStatus(ruser, ouser.NotifyProps)
+
+	auditRec.AddMetadata(patch, ouser, ruser, "user")
 
 	auditRec.Success()
 	auditRec.AddMeta("patch", ruser)

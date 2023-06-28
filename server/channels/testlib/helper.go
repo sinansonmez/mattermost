@@ -171,7 +171,12 @@ func (h *MainHelper) PreloadMigrations() {
 
 	basePath := os.Getenv("MM_SERVER_PATH")
 	if basePath == "" {
-		basePath = "mattermost-server/server"
+		_, err := os.Stat("mattermost-server/server")
+		if os.IsNotExist(err) {
+			basePath = "mattermost/server"
+		} else {
+			basePath = "mattermost-server/server"
+		}
 	}
 	relPath := "channels/testlib/testdata"
 	switch *h.Settings.DriverName {

@@ -25,8 +25,6 @@ describe('components/TeamSettings', () => {
     const defaultProps: ComponentProps<typeof GeneralTab> = {
         team: TestHelper.getTeamMock({id: 'team_id'}),
         maxFileSize: 50,
-        activeSection: 'team_icon',
-        updateSection: jest.fn(),
         closeModal: jest.fn(),
         collapseModal: jest.fn(),
         actions: baseActions,
@@ -189,10 +187,6 @@ describe('components/TeamSettings', () => {
         if (props.team) {
             props.team.invite_id = '';
         }
-
-        const wrapper = shallow<GeneralTab>(<GeneralTab {...props}/>);
-
-        wrapper.instance().handleUpdateSection('invite_id');
 
         expect(actions.getTeam).toHaveBeenCalledTimes(1);
         expect(actions.getTeam).toHaveBeenCalledWith(props.team?.id);

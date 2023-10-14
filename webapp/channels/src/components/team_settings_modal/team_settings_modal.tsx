@@ -28,22 +28,17 @@ export type State = {
 const TeamSettingsModal = (props: Props) => {
     const modalBodyRef = useRef<Modal>(null);
     const [activeTab, setActiveTab] = useState<string>('general');
-    const [activeSection, setActiveSection] = useState<string>('');
     const [show, setShow] = useState<boolean>(true);
 
     const updateTab = (tab: string) => {
         setActiveTab(tab);
-        setActiveSection('');
     };
-
-    const updateSection = (section: string) => setActiveSection(section);
 
     const collapseModal = () => {
         const el = ReactDOM.findDOMNode(modalBodyRef?.current) as HTMLDivElement;
         const modalDialog = el.closest('.modal-dialog');
         modalDialog?.classList.remove('display--content');
         setActiveTab('');
-        setActiveSection('');
     };
 
     const handleHide = () => setShow(false);
@@ -51,7 +46,6 @@ const TeamSettingsModal = (props: Props) => {
     // called after the dialog is fully hidden and faded out
     const handleHidden = () => {
         setActiveTab('general');
-        setActiveSection('');
         props.onExited();
     };
 
@@ -91,8 +85,6 @@ const TeamSettingsModal = (props: Props) => {
                     <div className='settings-content minimize-settings'>
                         <TeamSettings
                             activeTab={activeTab}
-                            activeSection={activeSection}
-                            updateSection={updateSection}
                             closeModal={handleHide}
                             collapseModal={collapseModal}
                         />

@@ -9,7 +9,7 @@ import './modal_header.scss';
 type Props = {
     id: string;
     title: string;
-    subtitle: string;
+    subtitle?: string;
     handleClose?: (e: React.MouseEvent) => void;
 }
 
@@ -23,7 +23,7 @@ function ModalHeader({id, title, subtitle, handleClose}: Props) {
             >
                 {title}
             </h1>
-            <div className='mm-modal-header__vertical-divider'/>
+            {subtitle ? <div className='mm-modal-header__vertical-divider'/> : undefined}
             <p className='mm-modal-header__subtitle'>{subtitle}</p>
             <div
                 className='mm-modal-header__ctr'
